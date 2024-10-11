@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <link rel="stylesheet" href="/style.css?v=1" />
+   
+  <title>Denemeden önce öğrendiğin Atölye! | </title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+</head>
+<body
+    class="bg-[url('/images/halo.gif')] max-w-[100vw] overflow-x-hidden font-serif"
+  ><header>
+  <a href="/">
+    <figure
+      id="header"
+      class="max-w-4xl h-20 bg-[url('/images/giris.gif')] border-4 border-moyai mx-4 mt-16 lg:m-auto lg:mt-16"
+    ></figure>
+  </a>
+</header>
+<div class="flex flex-col lg:flex-row max-w-4xl mx-4 lg:m-auto relative">
+      <nav
+  class="border-4 bg-white border-moyai p-4 w-full lg:w-auto lg:max-w-xs max-h-full"
+>
+  <ul>
+     
+    <li>
+      <a href="https://hackeratolyesi.com.tr">~/anaSayfa</a>
+    </li>
+     
+    <li>
+      <a href="/weblearning/">~/web</a>
+    </li>
+     
+    <li>
+      <a href="/mobilelearning/">~/mobil</a>
+    </li>
+     
+    <li>
+      <a href="/news/">~/news</a>
+    </li>
+    
+  </ul>
+</nav>
+
+
+<main
+  class="w-full h-full bg-white border-4 border-moyai p-4 overflow-x-auto markdown"
+>
+  <h1 id="joomla-nedir">Joomla Nedir?</h1>
+<p>Joomla, PHP ve MySQL ile MVC olarak geliştrilimiş web siteleri ve çevrimiçi uygulamalar oluşturmak için kullanılan ücretsiz ve açık kaynaklı bir İçerik Yönetim Sistemidir (CMS). Tüm web sitelerinin yaklaşık %2&rsquo;si Joomla kullanmaktadır, bu da onu dünya çapında milyonlarca dağıtımla en popüler CMS&rsquo;lerden biri haline getirmektedir.</p>
+<p>Detaylar için -&gt; <a href="https://www.joomla.org/">Joomla</a></p>
+<p>Bu kadar fazla tercih edilmesinden ötürü saldırganların önemli hedefi olmuş bir üründür. Joomla, öncesinde <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-23752" title="improper access control vulnerability (CVE-2023-23752)">improper access control</a> güvenlik açığı (<a href="https://nvd.nist.gov/vuln/detail/CVE-2023-23752">CVE-2023-23752</a>) aracılığıyla farklı kuruluşlara yönelik bir saldırıda hedef alındı.</p>
+<p>Bu makalede, 22 Kasım 2023 tarihinde SonarCloud tarafından tespit edilen  ve PHP&rsquo;deki bir hata nedeniyle ortaya çıkan <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=2024-21726">CVE-2024-21726</a>  XSS zafiyeti üzerine detaylı bir inceleme yapacağız. PHP&rsquo;nin <code>mbstring</code> modülü (çok baytlı dize fonksiyonlarını ifade eder) içindeki bir tutarsızlık, saldırganların Joomla&rsquo;da birden fazla XSS güvenlik açığını tetikleyen girdi sterilizasyonu sürecini atlamasına olanak tanıyabilir. Bu yazıda, bahsi geçen tutarsızlığın nasıl bir güvenlik zafiyetine yol açabileceğini ve saldırganların bu durumdan nasıl faydalanabileceğini açıklayacağız.</p>
+<h2 id="zafiyet">Zafiyet</h2>
+<p>Joomla&rsquo;yı tararken SonarCloud ilginç bir XSS sorunu bildirdi:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;forcedItemType&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&lt;?php echo </span><span style="color:#e6db74">$app-&gt;getInput</span><span style="color:#e6db74">()-&gt;get(&#39;forcedItemType&#39;, &#39;&#39;, &#39;string&#39;); ?&gt;&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div> <img src="../content-images/1.png" alt="1.Görsel">
+(administrator/components/com_associations/tmpl/associations/modal.php)
+<p>Yönetici panelindeki bir ayarlar sayfasında bulunan kodun amacı:</p>
+<p><code>$app-&gt;getInput()-&gt;get()</code> metoduyla alınan <code>forcedItemType</code> adındaki bir kullanıcı girişi, bu gizli alanın değerini oluşturur. Ancak, burada bir güvenlik zafiyeti vardır. Kullanıcı girdisi doğrudan <code>echo</code> ile çıktıya dahil edilir ve bu, kötü niyetli bir kullanıcının XSS saldırısını gerçekleştirmesine olanak tanır.</p>
+<p>Sorgu parametresini almak için kullanılan <code>get</code> yönteminin üçüncü argümanının <code>string</code> olarak ayarlandığına lütfen dikkat edin. Bu değer,  sorgu parametresine hangi filtrelerin uygulanması gerektiğini belirler.  Temel olarak, get yontemi, potansiyel olarak kotu amacli girisi temizlemek icin bir XSS sldirisini onlemesi gereken Joomla\Filter\InputFIlter sinifini kullanir.</p>
+<p>Filtre mantığı oldukça karmaşıktır ve açıkça izin verilmeyen tüm HTML etiketlerini kaldırmak için cleanTags adlı bir yöntem kullanır. Sorgu parametreleri için hiçbir etikete izin verilmez.</p>
+<p>Dolayısıyla, aşağıdaki örnek input için:</p>
+<p><code>herhangi-yazi&lt;script&gt;alert(10)&lt;/script&gt;</code></p>
+<p>etiketleri kaldırılır, bu da şu çıktıyla sonuçlanır:</p>
+<p><code>herhangi-yazialert(10)</code></p>
+<p>Açılış etiketinden önceki karakterler (örneğin, yukarıdaki örnekte herhangi-yazi) <code>StringHelper::strpos</code> aracılığıyla açılış etiketinin ofseti (<code>$tagOpenStart</code>) belirlenerek ve ardından <code>StringHelper::substr</code> kullanılarak çıkarılır:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#75715e">// Bir etiket var mı? Eğer öyleyse kesinlikle bir &#39;&lt;&#39; ile başlayacaktır.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$tagOpenStart <span style="color:#f92672">=</span> <span style="color:#a6e22e">StringHelper</span><span style="color:#f92672">::</span><span style="color:#a6e22e">strpos</span>($source, <span style="color:#e6db74">&#39;&lt;&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> ($tagOpenStart <span style="color:#f92672">!==</span> <span style="color:#66d9ef">false</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get some information about the tag we are processing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    $preTag <span style="color:#f92672">.=</span> <span style="color:#a6e22e">StringHelper</span><span style="color:#f92672">::</span><span style="color:#a6e22e">substr</span>($postTag, <span style="color:#ae81ff">0</span>, $tagOpenStart);
+</span></span></code></pre></div><p>Örnek string <code>herhangi-yazi&lt;script&gt;alert(1)&lt;/script&gt;</code> için, <code>StringHelper::substr</code> öğesine yapılan ilk çağrı <code>$preTag</code> değişkenine eklenen <code>herhangi-yazi</code> stringini döndürür:</p>
+ <img src="../content-images/2.png" alt="2.Görsel">
+<p>(Görseller <a href="https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/">https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/</a> &lsquo;dan alınmıştır.)</p>
+<h3 id="mb_strpos-fonksiyonu"><code>mb_strpos</code> Fonksiyonu</h3>
+<p><code>mb_strpos</code> fonksiyonu, bir string içinde belirli bir alt stringin ilk görüldüğü yerin index&rsquo;ini döndürür. Bu fonksiyon, çoklu bayt karakter setlerinde doğru çalışmak üzere tasarlanmıştır. Ancak, geçersiz UTF-8 byte dizileri ile karşılaştığında beklenmedik davranışlar sergileyebilir.</p>
+<p>Örnekle açıklayalım:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#75715e">// Geçersiz UTF-8 byte dizisi içeren bir string.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$string <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xf0\x9f</span><span style="color:#e6db74">AAA&lt;BB&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// &#39;&lt;&#39; karakterinin pozisyonunu arıyoruz.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$position <span style="color:#f92672">=</span> <span style="color:#a6e22e">mb_strpos</span>($string, <span style="color:#e6db74">&#39;&lt;&#39;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;UTF-8&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;The position of &#39;&lt;&#39; is: &#34;</span> <span style="color:#f92672">.</span> $position; <span style="color:#75715e">// Çıktı: 4
+</span></span></span></code></pre></div><p>Bu örnekte, <code>mb_strpos</code> fonksiyonu geçersiz byte dizisini (özellikle \xf0\x9f) bir karakter olarak değerlendirir ve <code>&lt;</code> karakterinin pozisyonunu 4 olarak döndürür. Ancak, bu dizilim geçersiz olduğunda, PHP&rsquo;nin bu byte&rsquo;ları nasıl işleyeceği belirsiz olabilir ve bu, güvenlik açıklarına yol açabilir.</p>
+<h3 id="mb_substr-fonksiyonu"><code>mb_substr</code> Fonksiyonu</h3>
+<p><code>mb_substr</code> fonksiyonu, belirtilen string&rsquo;in belirtilen başlangıç konumundan itibaren belirtilen uzunlukta bir alt string döndürür. Bu fonksiyon da çoklu bayt karakter setlerini destekler.</p>
+<p>Örnekle açıklayalım:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#75715e">// Aynı geçersiz UTF-8 string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$string <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xf0\x9f</span><span style="color:#e6db74">AAA&lt;BB&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// mb_strpos&#39;tan dönen index&#39;i kullanarak alt stringi alıyoruz.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$result <span style="color:#f92672">=</span> <span style="color:#a6e22e">mb_substr</span>($string, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#39;UTF-8&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;The substring is: &#34;</span> <span style="color:#f92672">.</span> $result; <span style="color:#75715e">// Çıktı: &#34;\xf0\x9fAAA&lt;B&#34;
+</span></span></span></code></pre></div><img src="../content-images/3.png" alt="3.Görsel">
+<p>(Görseller <a href="https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/">https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/</a> &lsquo;dan alınmıştır.)</p>
+<p>Bu örnekte, <code>mb_substr</code> başlangıç byte&rsquo;ına dayalı olarak takip eden byte&rsquo;ları bir karakter olarak ele alır ve <code>&lt;</code> karakteri dahil edilerek sonuç döndürülür. Bu, özellikle HTML içeriği kesme ve temizleme işlemlerinde sorunlara yol açabilir.</p>
+<p>Bu PHP&rsquo;nin eski sürümlerinde, mb_strpos ve mb_substr yöntemleri geçersiz UTF-8 dizilerini farklı şekilde ele alır.  Ne zaman mb_strpos UTF-8 öncü baytıyla karşılaştığında, bir sonraki devam baytını ayrıştırmaya çalışır ve bayt dizisinin tamamı okunana kadar baytlar. Eğer geçersiz bir bayt karşılaşıldığında, daha önce okunan tüm baytlar tek bir bayt olarak kabul edilir. Karakteri ve işleme geçersiz bayt ile yeniden başlar.</p>
+<h2 id="kaynakça">Kaynakça:</h2>
+<p><a href="https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/">https://www.sonarsource.com/blog/joomla-multiple-xss-vulnerabilities/</a></p>
+<p><a href="https://dayzerosec.com/vulns/2024/02/26/joomla-php-bug-introduces-multiple-xss-vulnerabilities.html">https://dayzerosec.com/vulns/2024/02/26/joomla-php-bug-introduces-multiple-xss-vulnerabilities.html</a></p>
+<p><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=2024-21726">https://cve.mitre.org/cgi-bin/cvename.cgi?name=2024-21726</a></p>
+<p><a href="https://www.joomla.org/announcements/release-news/5904-joomla-5-0-3-and-4-4-3-security-and-bug-fix-release.html">https://www.joomla.org/announcements/release-news/5904-joomla-5-0-3-and-4-4-3-security-and-bug-fix-release.html</a></p>
+<p><a href="https://developer.joomla.org/security-centre/929-20240205-core-inadequate-content-filtering-within-the-filter-code.html">https://developer.joomla.org/security-centre/929-20240205-core-inadequate-content-filtering-within-the-filter-code.html</a></p>
+
+  <p>
+    <a href="/"> >> Home</a>
+  </p>
+</main>
+
+
+    </div><footer
+  class="max-w-4xl bg-white border-4 border-moyai border-double text-center mx-4 mb-16 lg:m-auto lg:mb-16"
+>
+  Denemeden önce öğrendiğin Atölye!
+</footer>
+</body>
+</html>

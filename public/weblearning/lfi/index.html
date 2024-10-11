@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <link rel="stylesheet" href="/style.css?v=1" />
+   
+  <title>Denemeden önce öğrendiğin Atölye! | </title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+</head>
+<body
+    class="bg-[url('/images/halo.gif')] max-w-[100vw] overflow-x-hidden font-serif"
+  ><header>
+  <a href="/">
+    <figure
+      id="header"
+      class="max-w-4xl h-20 bg-[url('/images/giris.gif')] border-4 border-moyai mx-4 mt-16 lg:m-auto lg:mt-16"
+    ></figure>
+  </a>
+</header>
+<div class="flex flex-col lg:flex-row max-w-4xl mx-4 lg:m-auto relative">
+      <nav
+  class="border-4 bg-white border-moyai p-4 w-full lg:w-auto lg:max-w-xs max-h-full"
+>
+  <ul>
+     
+    <li>
+      <a href="https://hackeratolyesi.com.tr">~/anaSayfa</a>
+    </li>
+     
+    <li>
+      <a href="/weblearning/">~/web</a>
+    </li>
+     
+    <li>
+      <a href="/mobilelearning/">~/mobil</a>
+    </li>
+     
+    <li>
+      <a href="/news/">~/news</a>
+    </li>
+    
+  </ul>
+</nav>
+
+
+<main
+  class="w-full h-full bg-white border-4 border-moyai p-4 overflow-x-auto markdown"
+>
+  <h1 id="path-traversal">Path traversal</h1>
+<p>In this section, we explain:</p>
+<ul>
+<li>What path traversal is.</li>
+<li>How to carry out path traversal attacks and circumvent common obstacles.</li>
+<li>How to prevent path traversal vulnerabilities.</li>
+</ul>
+<h2 id="what-is-path-traversal">What is path traversal?</h2>
+<p>Path traversal is also known as directory traversal.  These vulnerabilities enable an attacker to read arbitrary files on the  server that is running an application. This might include:</p>
+<ul>
+<li>Application code and data.</li>
+<li>Credentials for back-end systems.</li>
+<li>Sensitive operating system files.</li>
+</ul>
+<p>In some cases, an attacker might be able to write to arbitrary files on  the server, allowing them to modify application data or behavior, and  ultimately take full control of the server.</p>
+<h2 id="reading-arbitrary-files-via-path-traversal">Reading arbitrary files via path traversal</h2>
+<p>Imagine a shopping application that displays images of items  for sale. This might load an image using the following HTML:</p>
+<p><code>&lt;img src=&quot;/loadImage?filename=218.png&quot;&gt;</code></p>
+<p>The <code>loadImage</code> URL takes a <code>filename</code> parameter and returns the contents of the specified file. The image files are stored on disk in the location <code>/var/www/images/</code>.  To return an image, the application appends the requested filename to  this base directory and uses a filesystem API to read the contents of  the file. In other words, the application reads from the following file  path:</p>
+<p><code>/var/www/images/218.png</code></p>
+<p>This application implements no defenses against path  traversal attacks. As a result, an attacker can request the following  URL to retrieve the <code>/etc/passwd</code> file from the server&rsquo;s filesystem:</p>
+<p><code>https://insecure-website.com/loadImage?filename=../../../etc/passwd</code></p>
+<p>This causes the application to read from the following file path:</p>
+<p><code>/var/www/images/../../../etc/passwd</code></p>
+<p>The sequence <code>../</code> is valid within a file path, and means to step up one level in the directory structure. The three consecutive <code>../</code> sequences step up from <code>/var/www/images/</code> to the filesystem root, and so the file that is actually read is:</p>
+<p><code>/etc/passwd</code></p>
+<p>On Unix-based operating systems, this is a standard file  containing details of the users that are registered on the server, but  an attacker could retrieve other arbitrary files using the same  technique.</p>
+<p>On Windows, both <code>../</code> and <code>..\</code> are valid directory traversal sequences. The following is an example of an equivalent attack against a Windows-based server:</p>
+<p><code>https://insecure-website.com/loadImage?filename=..\..\..\windows\win.ini</code></p>
+<h2 id="file-path-traversal-simple-case">File path traversal, simple case</h2>
+<h3 id="common-obstacles-to-exploiting-path-traversal-vulnerabilities">Common obstacles to exploiting path traversal vulnerabilities</h3>
+<p>Many applications that place user input into file paths  implement defenses against path traversal attacks. These can often be  bypassed.</p>
+<p>If an application strips or blocks directory traversal  sequences from the user-supplied filename, it might be possible to  bypass the defense using a variety of techniques.</p>
+<p>You might be able to use an absolute path from the filesystem root, such as <code>filename=/etc/passwd</code>, to directly reference a file without using any traversal sequences.</p>
+<h2 id="file-path-traversal-traversal-sequences-blocked-with-absolute-path-bypass">File path traversal, traversal sequences blocked with absolute path bypass</h2>
+<p>You might be able to use nested traversal sequences, such as <code>....//</code> or <code>....\/</code>. These revert to simple traversal sequences when the inner sequence is stripped.</p>
+<h2 id="file-path-traversal-traversal-seqeunces-stripped-non-recursively">File path traversal, traversal seqeunces stripped non-recursively</h2>
+<p>In some contexts, such as in a URL path or the <code>filename</code> parameter of a <code>multipart/form-data</code>  request, web servers may strip any directory traversal sequences before  passing your input to the application. You can sometimes bypass this  kind of sanitization by URL encoding, or even double URL encoding, the <code>../</code> characters. This results in <code>%2e%2e%2f</code> and <code>%252e%252e%252f</code> respectively. Various non-standard encodings, such as <code>..%c0%af</code> or <code>..%ef%bc%8f</code>, may also work.</p>
+<p>For <a href="https://portswigger.net/burp/pro">Burp Suite Professional</a> users, Burp Intruder provides the predefined payload list <strong>Fuzzing - path traversal</strong>. This contains some encoded path traversal sequences that you can try.</p>
+<h2 id="file-path-traversal-traversal-sequences-stripped-with-superfluous-url-decode">File path traversal, traversal sequences stripped with superfluous URL-decode</h2>
+<p>An application may require the user-supplied filename to start with the expected base folder, such as <code>/var/www/images</code>. In this case, it might be possible to include the required base folder followed by suitable traversal sequences. For example:</p>
+<p><code>filename=/var/www/images/../../../etc/passwd</code></p>
+<h2 id="file-path-traversal-validation-of-start-of-path">File path traversal, validation of start of path</h2>
+<p>An application may require the user-supplied filename to end with an expected file extension, such as <code>.png</code>.  In this case, it might be possible to use a null byte to effectively  terminate the file path before the required extension. For example:</p>
+<p><code>filename=../../../etc/passwd%00.png</code></p>
+<p>/var/www/images/../../../etc/passwd</p>
+<h2 id="file-path-traversal-validation-of-file-extension-with-null-byte-bypass">File path traversal, validation of file extension with null byte bypass</h2>
+<p>../../../etc/passwd%00.png</p>
+
+  <p>
+    <a href="/"> >> Home</a>
+  </p>
+</main>
+
+
+    </div><footer
+  class="max-w-4xl bg-white border-4 border-moyai border-double text-center mx-4 mb-16 lg:m-auto lg:mb-16"
+>
+  Denemeden önce öğrendiğin Atölye!
+</footer>
+</body>
+</html>

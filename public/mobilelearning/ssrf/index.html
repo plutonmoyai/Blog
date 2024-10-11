@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <link rel="stylesheet" href="/style.css?v=1" />
+   
+  <title>Denemeden önce öğrendiğin Atölye! | </title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+</head>
+<body
+    class="bg-[url('/images/halo.gif')] max-w-[100vw] overflow-x-hidden font-serif"
+  ><header>
+  <a href="/">
+    <figure
+      id="header"
+      class="max-w-4xl h-20 bg-[url('/images/giris.gif')] border-4 border-moyai mx-4 mt-16 lg:m-auto lg:mt-16"
+    ></figure>
+  </a>
+</header>
+<div class="flex flex-col lg:flex-row max-w-4xl mx-4 lg:m-auto relative">
+      <nav
+  class="border-4 bg-white border-moyai p-4 w-full lg:w-auto lg:max-w-xs max-h-full"
+>
+  <ul>
+     
+    <li>
+      <a href="https://hackeratolyesi.com.tr">~/anaSayfa</a>
+    </li>
+     
+    <li>
+      <a href="/weblearning/">~/web</a>
+    </li>
+     
+    <li>
+      <a href="/mobilelearning/">~/mobil</a>
+    </li>
+     
+    <li>
+      <a href="/news/">~/news</a>
+    </li>
+    
+  </ul>
+</nav>
+
+
+<main
+  class="w-full h-full bg-white border-4 border-moyai p-4 overflow-x-auto markdown"
+>
+  <h1 id="ssrf-nedir-server-side-request-forgery"><strong>SSRF NEDİR? (Server Side Request Forgery)</strong></h1>
+<p>Türkçesi sunucu taraflı istek sahteciliği olan bu güvenlik açıklığı,  saldırgana güvenlik açığı bulunan sunucudan istek oluşturması veya  buradan gelen istekleri kontrol edebilmesi için web uygulamasındaki bir  parametreyi değiştirmesine izin verir. Başka bir değişle saldırganın  doğrudan yapamadığı işlemleri sunucuya yaptırarak saldırganın sunucuyu  sömürmesi de diyebiliriz.</p>
+<p>Web uygulamaları, genellikle yazılım güncellemeleri gibi uzak  kaynakları almak veya bir URL’den ya da diğer web uygulamalarından  içeriye veri aktarmak için yapılan sunucular arası istekleri  tetikleyebilir. Bu tür sunucular arası istekler, genelde güvenli olsa da  implementasyon doğru yapılmadığı takdirde SSRF zafiyetine yol  açabilirler.</p>
+<p>Bir web uygulamasındaki bilgiler, başka bir web sitesinden gelen  harici bir kaynaktan alınmak zorundaysa, sunucu tarafı istekleri kaynağı  alıp web uygulamasına dahil etmek için kullanılır.</p>
+<h2 id="ssrf-zafiyetinin-kullanımı">SSRF Zafiyetinin Kullanımı</h2>
+<p><img src="images/Turkce-ssrf/ssrf.png" alt="SSRF Zafiyet Olay Akışı"></p>
+<ol>
+<li>SSRF zafiyetini kötüye kullanan bir isteği güvenlik açığı bulunan web sunucusuna göndermelidir.</li>
+<li>Web sunucusu, güvenlik duvarının arkasındaki kurbanın sunucusuna bir istek yapar.</li>
+<li>Kurbanın sunucusu veriyle cevap verir.</li>
+<li>Eğer SSRF açığı buna izin veriyorsa, veri saldırgana geri gönderilir.</li>
+</ol>
+<h2 id="ssrf-zafiyetinin-yansımaları">SSRF Zafiyetinin Yansımaları</h2>
+<h3 id="1-etkilenen-sunucuya-duyulan-güvenin-kötüye-kullanımı">1. Etkilenen sunucuya duyulan güvenin kötüye kullanımı</h3>
+<p>En iyi yöntem olarak, saldırı yüzeyini mümkün olduğu kadar küçük  tutmak her zaman daha iyidir, bu nedenle belirli portlara veya eylemlere  erişim genellikle, sadece whitelist’e alınmış makinelerle  sınırlandırılmaktadır. Aslında sunucular, verileri kolayca paylaşmak ve  yönetimsel görevlere izin vermek için genellikle diğer makinelerle güven  ilişkisine sahiptir.</p>
+<p>Örneğin ağ seviyesinde güven şu anlama gelir: Bir güvenlik duvarı,  eğer erişim talep eden makine aynı yerel ağda bulunuyorsa veya makinenin  IP adresine güveniliyorsa, sadece belirli portlara erişim izni verir.</p>
+<p>Yazılım düzeyinde güven şu şekilde olabilir: IP adresi 127.0.0.1  olduğu sürece veya yerel ağın içindeyse, bazı yönetimsel görevler için  kimlik doğrulama gerekli değildir. Bu tür bir güven, bir saldırganın  parolayı bildiği halde yerel ağa erişim olmadan giriş yapamamasını  sağlamak için ek bir güvenlik önlemi olarak da kullanılabilir.</p>
+<p>Saldırgan, SSRF’ten yararlanarak yukarıdaki kısıtlamaları atlatabilir  ve örneğin; etkilenen makineye güvenen diğer sunucuları sorgulayabilir  veya dış ağdan erişilemeyen bazı portlarla etkileşim kurmak için kötü  amaçlı isteklerde bulunabilir. Saldırgan, bu şekilde dışarıdan yapılması  mümkün olmayan kötü amaçlı eylemleri sunucunun kendisini kullanarak  sunucu üzerinde gerçekleştirebilir</p>
+<h3 id="2-yerel-veya-harici-ağların-taranması">2. Yerel veya Harici Ağların Taranması</h3>
+<p>Saldırganlar, SSRF güvenlik açığından yararlanarak, güvenlik açığı  bulunan sunucunun bağlı olduğu yerel veya harici ağları tarayabilir.  Saldırganlar genellikle bir sayfanın yüklenme süresini, sayfadaki hata  mesajını veya hedefledikleri araştırmadan cevap alıp alamadıklarını  belirlemek ve test edilen portun açık olup olmadığını doğrulamak için  sorguladıkları banner bilgisini kullanırlar.</p>
+<h3 id="bir-ağın-ssrf-zafiyeti-kullanılarak-nasıl-taranacağına-dair-örnek">Bir Ağın SSRF Zafiyeti Kullanılarak Nasıl Taranacağına Dair Örnek</h3>
+<p>Uzak kaynaktan jpeg formatında resim çağırmanıza izin veren ve bu  işlem sırasında resimlerin boyutlarını belirleyebilen bir web servisi  hayal edin.</p>
+<p>Önlem olarak, servis uzak kaynaktan gelen istekte &ldquo;<strong>image/jpeg</strong>&rdquo; değerine sahip bir <strong>Content-Type</strong>  headerı olup olmadığını denetler. Eğer Content-Type başlık alanı değeri  “image/jpeg” değilse veya içerik tipi farklıysa, dosyanın jpeg  olmadığını varsayarak “Sadece jpeg imajları kabul edilmektedir” şeklinde  bir hata döndürür. Bunun haricinde, uzaktaki kaynağa bağlanmada bir  problem varsa, &ldquo;<strong>Resim bulunamadı!</strong>&rdquo; hatası döndürülür.</p>
+<p>Saldırganların host’un ayakta olup olmadığını anlamak için web  servisinin yanıtını etkileyen nasıl farklı inputlar kullanabildiğine  bakalım.</p>
+<p><code>https://victim.com/image.php?url=https://example.com/picture.jpg</code>  şeklinde istekte bulunursak cevap olarak resmin yüksekliğini ve  genişliğini alırız. Ki bu, Content-Type header’ı doğru olan geçerli bir  resim olduğu anlamına gelir.</p>
+<p>Şimdi farklı bir istekte bulunmayı deneyelim ve sunucuya yaptığımız istekte resim yerine bir HTML dosyası gönderelim: <code>https://victim.com/image.php?url=https://example.com/index.html</code> Bu durumda yüklenen sayfanın Content-Type header’ı “text/html” olduğundan servisin cevabı “<strong>Sadece jpeg imajları kabul edilmektedir</strong>” olur.</p>
+<p>Şimdi geçersiz bir URL ile istekte bulunalım; <code>https://victim.com/image.php?url=https://example.invalid/</code> Servis “<strong>Resim bulunamadı</strong>” hatasının döndürür. Bunun anlamı uzak kaynak alınırken bir hata oluştuğudur.</p>
+<p>Artık uygulamanın farklı girdiler için nasıl davrandığını  bildiğimizden kötüye kullanmayı deneyebiliriz. Yanlış veya eksik  Content-Type header’ı olan geçerli bir URL&rsquo;in “Sadece jpeg imajları  kabul edilmektedir” hatasını döndürdüğünü biliyoruz. Bunun anlamı  aşağıdaki isteği gönderirsek;</p>
+<p><code>https://victim.com/image.php?url=127.0.0.1:3306</code></p>
+<p>Ve “Resim bulunamadı” hatası alırsak, bunun anlamı 127.0.0.1 port  3306’da yanıt yok demektir. Eğer “Sadece jpeg imajları kabul  edilmektedir” hatasını alırsak sunucudan gelen bir yanıtın olduğunu  dolayısıyla söz konusu port üzerinde bir servisin çalıştığını  anlayabiliriz. Bundan dolayı bu metodu, tam bir tarama yapma amacıyla  farklı dahili IP adreslerini ve portlarını sorgulamak için  kullanabiliriz.</p>
+<h3 id="3-sunucudan-dosyaların-okunması">3. Sunucudan Dosyaların Okunması</h3>
+<p>Uzak bir kaynağın içeriği doğrudan bir sayfaya yansıtıldığında,  saldırganların dosyaların içeriğini okuma olasılığı vardır. Örnek  olarak, verilen bir url&rsquo;den tüm resimleri kaldıran ve metni  biçimlendiren bir web servisi düşünün. İlk önce belirli bir url&rsquo;nin  yanıt gövdesini elde ederek çalışır, daha sonra biçimlendirmeyi uygular.</p>
+<p>Eğer <strong>http://</strong> veya <strong>https://</strong> yerine <strong>file://</strong>  kullanırsak yerel dosya sisteminden dosyaları okuyabiliriz. Örneğin  file:///etc/passwd kullanırsak unix sistemlerindeki passwd dosyasının  içeriğini sayfaya yazdırabiliriz. Aynı teknik zafiyet bulunan web  uygulamasının kaynak kodunu görmek için de kullanılabilir.</p>
+<h3 id="siteler-arası-betik-çalıştırma"><strong>Siteler arası betik çalıştırma:</strong></h3>
+<p>SSRF  açıklığını kullanarak reflected XSS atakları düzenlenebilir. Bu ataklar  sayesinde kullanıcıların cookie bilgileri çalınabilir, başka sayfaya  yönlendirme, hatta BeeF kullanarak browser üzerinde komut bile  çalıştırılabilir.
+XSS atağı düzenlerken kullanacağımız zararlı javascript kodu içeren dosyayı da yine uzak sunucudan çekebiliriz.
+<a href="http://webuygulamasi.com/?url=http://brutelogic.com.br/poc.svg">http://webuygulamasi.com/?url=http://brutelogic.com.br/poc.svg</a></p>
+<h2 id="ssrf-zafiyetinin-etkileri">SSRF Zafiyetinin Etkileri</h2>
+<ul>
+<li>Siteler arası betik çalıştırma, (SSRF to Reflected XSS)</li>
+<li>Server içerisinde uzaktan kod çalıştırma, (SSRF to RCE)</li>
+<li>Sunucuda kritik dosyaların içeriğinin okunması, (SSRF to LFI)</li>
+<li>URL şemaları kullanarak sunucuya işlem yaptırılması, (ftp://, dict://, http://, gopher://, file:// vb.)</li>
+<li>Cloud servislerin meta-data bilgilerinin çekilmesi,</li>
+<li>Whitelist ve DNS çözümlemelerinin aşılması gibi faaliyetler de bulunulabilir.</li>
+<li>Daha fazla keşif yapmanıza izin veren Gopher gibi bazı protokollerle etkileşime izin verir.</li>
+<li>Bir reverse proxy’nin arkasındaki sunucuların IP adreslerini tespit edebilir.</li>
+<li>Bu ana makinelerde çalışan hizmetleri numaralandırmak ve saldırmak</li>
+<li>Host-Based tabanlı kimlik doğrulama hizmetlerinden faydalanarak authentication bypass</li>
+<li>Status Pages (Durum Sayfaları)&lsquo;i görüntüleyebilir ve API&rsquo;larla kurulan  etkileşimde, zafiyetin bulunduğu web sunucusunun yerine geçebilir.</li>
+<li>Sunucuya bağlı olan yerel ağı tarayabilir.</li>
+<li>Sunucuda bulunan dosyaları okuyabilir.</li>
+<li>Zafiyeti barındıran sunucu ile diğerleri arasındaki güven ilişkisini kötüye kullanabilir.</li>
+<li>IP kontrolünü atlatabilir.</li>
+</ul>
+<p>Saldırganlar, SSRF zafiyetinden yararlanarak bir dizi tehlikeli eylemi gerçekleştirebilirler. Bunların bazıları çok ciddi sonuçlar doğurabilmektedir. Fakat bu eylemlerin potansiyel sonuçları, genellikle web uygulamasının uzak kaynaklardan gelen istekleri nasıl işlediğine bağlıdır.</p>
+<h2 id="ssrf-zafiyeti-önleme-metotları"><strong>SSRF Zafiyeti Önleme Metotları</strong></h2>
+<h3 id="dns-çözümleme-ve-whitelist-oluşturma"><strong>DNS Çözümleme ve Whitelist Oluşturma:</strong></h3>
+<p>SSRF  tehdini önlemenin en sağlam yolu, uygulamanızın erişmesi gereken DNS  adını veya IP adresini whitelist yöntemiyle erişime açmaktır. Whitelist  yaklaşımı size uymuyorsa mecburen bir blacklist oluşturup güvenmediğiniz  IP adreslerini tutabilirsiniz. Burada önemli olan kullanıcı erişimini  doğrulamaktır.
+Blacklist yöntemi için sayısız ihtimali azaltma yolu  olarak da düşünebiliriz. SSRF için evrensel bir önleme metodu olmadığı  için mecburiyet halinde kullanılmalıdır.</p>
+<h3 id="kullanılmayan-url-şemalarını-devre-dışı-bırakma"><strong>Kullanılmayan URL Şemalarını Devre Dışı Bırakma:</strong></h3>
+<p>Uygulamanız  istekte bulunmak için yalnızca HTTP veya HTTPS kullanıyorsa, yalnızca  bu URL şemalarına izin verin. Kullanılmayan URL şemalarını devre dışı  bırakırsanız, saldırgan, <code>file://, dict://, ftp:// ve gopher://</code> gibi  tehlikeli şemalar kullanarak istekte bulunmak için web uygulamasını  kullanamaz.</p>
+<h3 id="iç-ağda-bulunan-servislere-erişim-için-kimlik-doğrulama"><strong>İç Ağda Bulunan Servislere Erişim İçin Kimlik Doğrulama:</strong></h3>
+<p>Varsayılan  olarak, Memcached, Redis, Elasticsearch ve MongoDB gibi servislerin  onaylanması gerekmez. Saldırgan, bu hizmetlere kimlik doğrulaması  yapmadan erişebilir. Bu nedenle yerel ağdaki hizmetler için mümkün  olduğunca kimlik doğrulamasını etkinleştirmek gerekmektedir.</p>
+<h3 id="sunucu-taraflı-yanıt-kontrolü-response-handling"><strong>Sunucu Taraflı Yanıt Kontrolü (Response Handling):</strong></h3>
+<p>Saldırganların <strong>SSRF</strong>  ile sunucudan sömürü amaçlı aldığı yanıtlar normalden farklı olacaktır.  Sunucudan gönderilen yanıtların veya isteklerin kontrol edilip çıktığı  gibi iletilmemesi gerekmektedir. Aksi takdirde <strong>SSRF</strong> ile verilen yanıtlar saldırganın isteğine göre kontrolsüz şekilde gidecektir.</p>
+<h2 id="referans-ve-kaynakça">Referans ve Kaynakça:</h2>
+<p><a href="https://www.netsparker.com.tr/blog/web-guvenligi/ssrf-nedir-ssrf-nasil-onlenir/">https://www.netsparker.com.tr/blog/web-guvenligi/ssrf-nedir-ssrf-nasil-onlenir/</a></p>
+<p><a href="https://www.gaissecurity.com/blog/ssrf-server-side-request-forgery">https://www.gaissecurity.com/blog/ssrf-server-side-request-forgery</a></p>
+<p><a href="https://portswigger.net/web-security/ssrf">https://portswigger.net/web-security/ssrf</a></p>
+<p><a href="https://book.hacktricks.xyz/pentesting-web/ssrf-server-side-request-forgery#gopher">https://book.hacktricks.xyz/pentesting-web/ssrf-server-side-request-forgery#gopher</a></p>
+
+  <p>
+    <a href="/"> >> Home</a>
+  </p>
+</main>
+
+
+    </div><footer
+  class="max-w-4xl bg-white border-4 border-moyai border-double text-center mx-4 mb-16 lg:m-auto lg:mb-16"
+>
+  Denemeden önce öğrendiğin Atölye!
+</footer>
+</body>
+</html>

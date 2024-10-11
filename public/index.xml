@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Denemeden önce öğrendiğin Atölye!</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Denemeden önce öğrendiğin Atölye!</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>http://localhost:1313/mobilelearning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/mobilelearning/</guid>
+      <description>Mobil Uygulamalari Sizma Testi Temelleri ve Lablari Lab ve temel bilgiler icin:&#xA;Jumpscare Mobil Sizma Testi Araclari icin buraya tiklayiniz.&#xA;SSRF icin buraya tiklayiniz.&#xA;LFI icin buraya tiklayiniz.</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/mobilelearning/mobil-sizma-testi-araclari/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/mobilelearning/mobil-sizma-testi-araclari/</guid>
+      <description>Mobile Sızma Testler&amp;rsquo;nde kullanılan araçlar En çok kullandiklarım: Frida Objection Jadx Adb Smali MobSF / Docker&amp;rsquo;da IntelliJ Idea (opsiyonel, Eclipse de tercih edilebilir.) Burp Suite Wireshark Mobil için araştırdığım araçlar: Tersine Mühendiislik Baksmali Dex2jar Drozer jAD jadx jD-Gui Smali Apksigner Apktool Dinamik Analiz Frida Objection MobSF Burp Suite Drozer Appie Owasp ZAP Wireshark Statik Analiz MobSF QARK AndroBugs Jadx Smali IDE &amp;amp; Veritabanı Intellij IDEA Android Studio Visual Studio Code Eclipse Sqlite3 Forensics Cellebrite UFED Oxygen Forensic Detective Magnet AXIOM XRY DFF GuyMager TestDisk Volatility Fridump Root &amp;amp; ROM İşlemleri TWRP Odin Magisk lsposed </description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/mobilelearning/ssrf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/mobilelearning/ssrf/</guid>
+      <description>SSRF NEDİR? (Server Side Request Forgery) Türkçesi sunucu taraflı istek sahteciliği olan bu güvenlik açıklığı, saldırgana güvenlik açığı bulunan sunucudan istek oluşturması veya buradan gelen istekleri kontrol edebilmesi için web uygulamasındaki bir parametreyi değiştirmesine izin verir. Başka bir değişle saldırganın doğrudan yapamadığı işlemleri sunucuya yaptırarak saldırganın sunucuyu sömürmesi de diyebiliriz.&#xA;Web uygulamaları, genellikle yazılım güncellemeleri gibi uzak kaynakları almak veya bir URL’den ya da diğer web uygulamalarından içeriye veri aktarmak için yapılan sunucular arası istekleri tetikleyebilir.</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/news/joomla/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/news/joomla/</guid>
+      <description>Joomla Nedir? Joomla, PHP ve MySQL ile MVC olarak geliştrilimiş web siteleri ve çevrimiçi uygulamalar oluşturmak için kullanılan ücretsiz ve açık kaynaklı bir İçerik Yönetim Sistemidir (CMS). Tüm web sitelerinin yaklaşık %2&amp;rsquo;si Joomla kullanmaktadır, bu da onu dünya çapında milyonlarca dağıtımla en popüler CMS&amp;rsquo;lerden biri haline getirmektedir.&#xA;Detaylar için -&amp;gt; Joomla&#xA;Bu kadar fazla tercih edilmesinden ötürü saldırganların önemli hedefi olmuş bir üründür. Joomla, öncesinde improper access control güvenlik açığı (CVE-2023-23752) aracılığıyla farklı kuruluşlara yönelik bir saldırıda hedef alındı.</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/weblearning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/weblearning/</guid>
+      <description>Web Uygulamalari Sizma Testi ve Lablari Lab ve temel bilgiler icin:&#xA;Jumpscare LFI icin buraya tiklayiniz.&#xA;LFI icin buraya tiklayiniz.&#xA;LFI icin buraya tiklayiniz.</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/weblearning/lfi/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/weblearning/lfi/</guid>
+      <description>Path traversal In this section, we explain:&#xA;What path traversal is. How to carry out path traversal attacks and circumvent common obstacles. How to prevent path traversal vulnerabilities. What is path traversal? Path traversal is also known as directory traversal. These vulnerabilities enable an attacker to read arbitrary files on the server that is running an application. This might include:&#xA;Application code and data. Credentials for back-end systems. Sensitive operating system files.</description>
+    </item>
+  </channel>
+</rss>
