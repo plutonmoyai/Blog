@@ -1,0 +1,24 @@
+theme = 'cyberscape'
+baseURL = 'https://hackeratolyesi.com.tr/'
+languageCode = 'en-us'
+title = 'Denemeden önce öğrendiğin Atölye!'
+
+# Add any links to things in /content/ here
+[[menu.main]]
+name = "web"
+url = "/weblearning/"
+weight = 1
+
+[[menu.main]]
+name = "mobil"
+url = "/mobilelearning/"
+weight = 2
+
+[[menu.main]]
+name = "news"
+url = "/news/"
+weight = 2
+
+# Enable this for Tailwind in markdown files
+[markup.goldmark.renderer]
+unsafe=true
